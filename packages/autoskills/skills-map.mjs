@@ -716,7 +716,7 @@ export const SKILLS_MAP = [
   },
   {
     id: "redis-ruby",
-    name: "Redis",
+    name: "Redis (Ruby)",
     detect: {
       gems: ["redis", "sidekiq", "resque", "redis-rails"],
     },
@@ -1007,9 +1007,7 @@ export const COMBO_SKILLS_MAP = [
     id: "rails-sidekiq",
     name: "Ruby on Rails + Sidekiq",
     requires: ["rails", "sidekiq"],
-    skills: [
-      "igmarin/rails-agent-skills/rails-background-jobs",
-    ],
+    skills: [],
   },
 ];
 
