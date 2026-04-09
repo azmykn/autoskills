@@ -3,6 +3,7 @@ import { ok, strictEqual, deepStrictEqual } from "node:assert/strict";
 import {
   getAllPackageNames,
   readPackageJson,
+  readGemfile,
   readDenoJson,
   getDenoImportNames,
   detectTechnologies,
@@ -61,6 +62,36 @@ describe("readPackageJson", () => {
   it("returns null for invalid JSON", () => {
     writeFile(tmp.path, "package.json", "{ not valid json }}}");
     strictEqual(readPackageJson(tmp.path), null);
+  });
+});
+
+// ── readGemfile ──────────────────────────────────────────────
+
+describe("readGemfile", () => {
+  const tmp = useTmpDir();
+
+  it("returns empty array when no Gemfile exists", () => {
+    deepStrictEqual(readGemfile(tmp.path), []);
+  });
+
+  it("parses gem names with single quotes", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'rails', '~> 7.0'\ngem 'pg'\n");
+    deepStrictEqual(readGemfile(tmp.path), ["rails", "pg"]);
+  });
+
+  it("parses gem names with double quotes", () => {
+    writeFile(tmp.path, "Gemfile", 'gem "rails"\ngem "sidekiq"\n');
+    deepStrictEqual(readGemfile(tmp.path), ["rails", "sidekiq"]);
+  });
+
+  it("ignores comments", () => {
+    writeFile(tmp.path, "Gemfile", "# gem 'unused'\ngem 'rails'\n");
+    deepStrictEqual(readGemfile(tmp.path), ["rails"]);
+  });
+
+  it("handles indented gems (inside groups)", () => {
+    writeFile(tmp.path, "Gemfile", "group :development do\n  gem 'rspec'\nend\n");
+    deepStrictEqual(readGemfile(tmp.path), ["rspec"]);
   });
 });
 
@@ -137,6 +168,35 @@ describe("detectTechnologies", () => {
     const { detected } = detectTechnologies(tmp.path);
     const ids = detected.map((t) => t.id);
     ok(ids.includes("tailwind"));
+  });
+
+  it("detects Go from go.mod", () => {
+    writePackageJson(tmp.path);
+    writeFile(tmp.path, "go.mod", "module example.com/test\n\ngo 1.24.0\n");
+
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+
+    ok(ids.includes("go"));
+  });
+
+  it("detects Go from go.work", () => {
+    writePackageJson(tmp.path);
+    writeFile(tmp.path, "go.work", "go 1.24.0\n");
+
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+
+    ok(ids.includes("go"));
+  });
+
+  it("does not detect Go without go.mod or go.work", () => {
+    writePackageJson(tmp.path);
+
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+
+    ok(!ids.includes("go"));
   });
 
   it("detects Three.js from dependencies", () => {
@@ -434,6 +494,33 @@ plugins {
     ok(detected.some((t) => t.id === "tauri"));
   });
 
+  it("detects Electron from electron package", () => {
+    writePackageJson(tmp.path, { devDependencies: { electron: "^30.0.0" } });
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "electron"));
+  });
+
+  it("detects Electron from electron-builder config file", () => {
+    writePackageJson(tmp.path);
+    writeFile(tmp.path, "electron-builder.yml", "productName: My App");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "electron"));
+  });
+
+  it("detects Electron from forge config file", () => {
+    writePackageJson(tmp.path);
+    writeFile(tmp.path, "forge.config.js", "module.exports = {}");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "electron"));
+  });
+
+  it("detects Electron from electron-vite config file", () => {
+    writePackageJson(tmp.path);
+    writeFile(tmp.path, "electron-vite.config.ts", "export default {}");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "electron"));
+  });
+
   it("detects Rust from Cargo.toml", () => {
     writeFile(tmp.path, "Cargo.toml", '[package]\nname = "my-crate"\nversion = "0.1.0"');
     const { detected } = detectTechnologies(tmp.path);
@@ -446,6 +533,62 @@ plugins {
     const rust = detected.find((t) => t.id === "rust");
     ok(rust);
     ok(rust.skills.includes("apollographql/skills/rust-best-practices"));
+  });
+
+  it("detects Python from pyproject.toml", () => {
+    writeFile(tmp.path, "pyproject.toml", '[tool.poetry]\nname = "test"');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "python"));
+  });
+
+  it("detects Python from requirements.txt", () => {
+    writeFile(tmp.path, "requirements.txt", "requests==2.31.0");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "python"));
+  });
+
+  it("detects FastAPI from requirements.txt", () => {
+    writeFile(tmp.path, "requirements.txt", "fastapi==0.100.0\npydantic==2.0.0");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "fastapi"));
+    ok(detected.some((t) => t.id === "pydantic"));
+  });
+
+  it("detects Django from pyproject.toml", () => {
+    writeFile(tmp.path, "pyproject.toml", '[tool.poetry.dependencies]\nDjango = "^5.0"');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "django"));
+  });
+
+  it("detects Flask from requirements.txt", () => {
+    writeFile(tmp.path, "requirements.txt", "Flask>=2.0.0");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "flask"));
+  });
+
+  it("detects SQLAlchemy from requirements.txt", () => {
+    writeFile(tmp.path, "requirements.txt", "SQLAlchemy==2.0.19");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "sqlalchemy"));
+  });
+
+  it("detects Data Science stack (Pandas, NumPy, Scikit-Learn)", () => {
+    writeFile(tmp.path, "requirements.txt", "pandas>=2.0\nnumpy==1.26.0\nscikit-learn==1.3.0");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "pandas"));
+    ok(detected.some((t) => t.id === "numpy"));
+    ok(detected.some((t) => t.id === "scikit-learn"));
+  });
+
+  it("detects Pytest and Celery from pyproject.toml", () => {
+    writeFile(
+      tmp.path,
+      "pyproject.toml",
+      '[tool.poetry.dependencies]\npytest = "^7.0"\ncelery = "^5.3"',
+    );
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "pytest"));
+    ok(detected.some((t) => t.id === "celery"));
   });
 
   it("detects Clerk from @clerk/nextjs package", () => {
@@ -744,6 +887,52 @@ dependencies {
     ok(ids.includes("clerk"));
   });
 
+  it("detects Dart from pubspec.yaml without package.json", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: dart_app\ndescription: A Dart CLI tool\nenvironment:\n  sdk: '^3.2.0'");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "dart"));
+  });
+
+  it("returns correct skills for Dart detection", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: dart_app\ndescription: A Dart application");
+    const { detected } = detectTechnologies(tmp.path);
+    const dart = detected.find((t) => t.id === "dart");
+    ok(dart);
+    ok(dart.skills.includes("kevmoo/dash_skills/dart-best-practices"));
+  });
+
+  it("detects Flutter from pubspec.yaml with flutter: key", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: flutter_app\ndescription: A Flutter application\nflutter:\n  uses-material-design: true");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "flutter"));
+  });
+
+  it("returns correct skills for Flutter detection", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: flutter_app\nflutter:\n  uses-material-design: true");
+    const { detected } = detectTechnologies(tmp.path);
+    const flutter = detected.find((t) => t.id === "flutter");
+    ok(flutter);
+    ok(flutter.skills.includes("jeffallan/claude-skills/flutter-expert"));
+    ok(flutter.skills.includes("madteacher/mad-agents-skills/flutter-animations"));
+    ok(flutter.skills.includes("madteacher/mad-agents-skills/flutter-testing"));
+  });
+
+  it("detects both Dart and Flutter for Flutter projects", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: flutter_app\nenvironment:\n  sdk: '^3.2.0'\nflutter:\n  uses-material-design: true");
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+    ok(ids.includes("dart"), "Dart should be detected (pubspec.yaml exists)");
+    ok(ids.includes("flutter"), "Flutter should be detected (flutter: key present)");
+  });
+
+  it("detects only Dart when pubspec.yaml has no flutter: key", () => {
+    writeFile(tmp.path, "pubspec.yaml", "name: dart_cli\ndescription: A Dart CLI tool\nenvironment:\n  sdk: '^3.2.0'\ndependencies:\n  args: ^2.4.0");
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+    ok(ids.includes("dart"), "Dart should be detected");
+    ok(!ids.includes("flutter"), "Flutter should not be detected");
+  });
+
   it("detects React from deno.json npm: import", () => {
     writeJson(tmp.path, "deno.json", {
       imports: { react: "npm:react@^19", "react-dom": "npm:react-dom@^19" },
@@ -838,6 +1027,51 @@ dependencies { implementation("com.clerk:clerk-android:1.0.0") }
     ok(ids.includes("clerk"));
     ok(combos.some((c) => c.id === "android-clerk"));
   });
+
+  it("detects Terraform from .terraform.lock.hcl", () => {
+    writeFile(
+      tmp.path,
+      ".terraform.lock.hcl",
+      "# This file is maintained automatically by terraform",
+    );
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "terraform"));
+  });
+
+  it("detects Terraform from terraform.tfvars", () => {
+    writeFile(tmp.path, "terraform.tfvars", 'region = "us-east-1"');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "terraform"));
+  });
+
+  it("detects Terraform from main.tf", () => {
+    writeFile(tmp.path, "main.tf", 'terraform {\n  required_version = ">= 1.0"\n}');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "terraform"));
+  });
+
+  it("detects Terraform from variables.tf", () => {
+    writeFile(tmp.path, "variables.tf", 'variable "region" {\n  type = string\n}');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "terraform"));
+  });
+
+  it("detects Terraform from outputs.tf", () => {
+    writeFile(tmp.path, "outputs.tf", 'output "vpc_id" {\n  value = aws_vpc.main.id\n}');
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "terraform"));
+  });
+
+  it("returns correct skills for Terraform detection", () => {
+    writeFile(tmp.path, ".terraform.lock.hcl", "# terraform lock file");
+    const { detected } = detectTechnologies(tmp.path);
+    const terraform = detected.find((t) => t.id === "terraform");
+    ok(terraform);
+    ok(terraform.skills.includes("hashicorp/agent-skills/terraform-style-guide"));
+    ok(terraform.skills.includes("hashicorp/agent-skills/refactor-module"));
+    ok(terraform.skills.includes("hashicorp/agent-skills/terraform-stacks"));
+    ok(terraform.skills.includes("wshobson/agents/terraform-module-library"));
+  });
 });
 
 // ── readDenoJson ──────────────────────────────────────────────
@@ -924,6 +1158,97 @@ describe("getDenoImportNames", () => {
     ok(result.includes("hono"));
     ok(result.includes("@std/fs"));
     strictEqual(result.length, 3);
+  });
+
+});
+
+// ── detectTechnologies (Ruby/Rails) ───────────────────────────
+
+describe("detectTechnologies (Ruby/Rails)", () => {
+  const tmp = useTmpDir();
+
+  it("detects Ruby from Gemfile", () => {
+    writeFile(tmp.path, "Gemfile", "source 'https://rubygems.org'\ngem 'rails'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "ruby"));
+  });
+
+  it("detects Ruby on Rails from Gemfile", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'rails', '~> 7.1'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "rails"));
+  });
+
+  it("detects Rails from config/routes.rb", () => {
+    writeFile(tmp.path, "config/routes.rb", "Rails.application.routes.draw do\nend\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "rails"));
+  });
+
+  it("detects PostgreSQL from pg gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'pg'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "postgres-ruby"));
+  });
+
+  it("detects Redis from redis gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'redis'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "redis-ruby"));
+  });
+
+  it("detects Redis from sidekiq gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'sidekiq'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "redis-ruby"));
+    ok(detected.some((t) => t.id === "sidekiq"));
+  });
+
+  it("detects Sorbet from sorbet gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'sorbet'\ngem 'sorbet-runtime'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "sorbet"));
+  });
+
+  it("detects ActiveAdmin from activeadmin gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'activeadmin'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "activeadmin"));
+  });
+
+  it("detects Devise from devise gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'devise'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "devise"));
+  });
+
+  it("detects RSpec from rspec-rails gem", () => {
+    writeFile(tmp.path, "Gemfile", "gem 'rspec-rails'\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "rspec"));
+  });
+
+  it("detects RuboCop from .rubocop.yml", () => {
+    writeFile(tmp.path, ".rubocop.yml", "AllCops:\n  TargetRubyVersion: 3.2\n");
+    const { detected } = detectTechnologies(tmp.path);
+    ok(detected.some((t) => t.id === "rubocop"));
+  });
+
+  it("detects multiple Ruby technologies from a single Gemfile", () => {
+    writeFile(
+      tmp.path,
+      "Gemfile",
+      "gem 'rails', '~> 7.1'\ngem 'pg'\ngem 'redis'\ngem 'sidekiq'\ngem 'devise'\ngem 'sorbet-runtime'\n",
+    );
+    const { detected } = detectTechnologies(tmp.path);
+    const ids = detected.map((t) => t.id);
+    ok(ids.includes("ruby"));
+    ok(ids.includes("rails"));
+    ok(ids.includes("postgres-ruby"));
+    ok(ids.includes("redis-ruby"));
+    ok(ids.includes("sidekiq"));
+    ok(ids.includes("devise"));
+    ok(ids.includes("sorbet"));
   });
 });
 
@@ -1157,5 +1482,20 @@ describe("detectCombos", () => {
   it("does not detect android-clerk combo without clerk", () => {
     const combos = detectCombos(["android"]);
     ok(!combos.some((c) => c.id === "android-clerk"));
+  });
+
+  it("detects rails-rspec combo", () => {
+    const combos = detectCombos(["rails", "rspec"]);
+    ok(combos.some((c) => c.id === "rails-rspec"));
+  });
+
+  it("detects rails-sidekiq combo", () => {
+    const combos = detectCombos(["rails", "sidekiq"]);
+    ok(combos.some((c) => c.id === "rails-sidekiq"));
+  });
+
+  it("does not detect rails-rspec combo without rspec", () => {
+    const combos = detectCombos(["rails"]);
+    ok(!combos.some((c) => c.id === "rails-rspec"));
   });
 });

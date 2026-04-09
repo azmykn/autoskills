@@ -170,6 +170,29 @@ export const SKILLS_MAP = [
     skills: ["sleekdotdesign/agent-skills/sleek-design-mobile-apps"],
   },
   {
+    id: "dart",
+    name: "Dart",
+    detect: {
+      configFiles: ["pubspec.yaml"],
+    },
+    skills: ["kevmoo/dash_skills/dart-best-practices"],
+  },
+  {
+    id: "flutter",
+    name: "Flutter",
+    detect: {
+      configFileContent: {
+        patterns: ["flutter:"],
+        files: ["pubspec.yaml"],
+      },
+    },
+    skills: [
+      "jeffallan/claude-skills/flutter-expert",
+      "madteacher/mad-agents-skills/flutter-animations",
+      "madteacher/mad-agents-skills/flutter-testing",
+    ],
+  },
+  {
     id: "kotlin-multiplatform",
     name: "Kotlin Multiplatform",
     detect: {
@@ -410,6 +433,25 @@ export const SKILLS_MAP = [
     skills: ["cloudflare/skills/building-ai-agent-on-cloudflare"],
   },
   {
+    id: "terraform",
+    name: "Terraform",
+    detect: {
+      configFiles: [
+        ".terraform.lock.hcl",
+        "terraform.tfvars",
+        "main.tf",
+        "variables.tf",
+        "outputs.tf",
+      ],
+    },
+    skills: [
+      "hashicorp/agent-skills/terraform-style-guide",
+      "hashicorp/agent-skills/refactor-module",
+      "hashicorp/agent-skills/terraform-stacks",
+      "wshobson/agents/terraform-module-library",
+    ],
+  },
+  {
     id: "aws",
     name: "AWS",
     detect: {
@@ -509,6 +551,17 @@ export const SKILLS_MAP = [
       packages: ["express"],
     },
     skills: [],
+  },
+  {
+    id: "go",
+    name: "Go",
+    detect: {
+      configFiles: ["go.mod", "go.work"],
+    },
+    skills: [
+      "affaan-m/everything-claude-code/golang-patterns",
+      "affaan-m/everything-claude-code/golang-testing",
+    ],
   },
   {
     id: "deno",
@@ -650,6 +703,27 @@ export const SKILLS_MAP = [
     skills: ["nodnarbnitram/claude-code-extensions/tauri-v2"],
   },
   {
+    id: "electron",
+    name: "Electron",
+    detect: {
+      packages: ["electron"],
+      configFiles: [
+        "electron-builder.yml",
+        "electron-builder.json",
+        "electron-builder.js",
+        "forge.config.js",
+        "forge.config.cjs",
+        "forge.config.mjs",
+        "forge.config.ts",
+        "electron-vite.config.ts",
+        "electron-vite.config.js",
+        "electron-vite.config.mjs",
+        "electron-vite.config.cjs",
+      ],
+    },
+    skills: ["vercel-labs/agent-skills/electron-best-practices"],
+  },
+  {
     id: "rust",
     name: "Rust",
     detect: {
@@ -658,10 +732,75 @@ export const SKILLS_MAP = [
     skills: ["apollographql/skills/rust-best-practices"],
   },
   {
+    id: "ruby",
+    name: "Ruby",
+    detect: {
+      configFiles: ["Gemfile", "Gemfile.lock", ".ruby-version", ".ruby-gemset"],
+    },
+    skills: [
+      "lucianghinda/superpowers-ruby/ruby",
+    ],
+  },
+  {
+    id: "rails",
+    name: "Ruby on Rails",
+    detect: {
+      gems: ["rails"],
+      configFiles: ["config/routes.rb", "config/application.rb", "bin/rails"],
+    },
+    skills: [
+      "sergiodxa/agent-skills/ruby-on-rails-best-practices",
+      "lucianghinda/superpowers-ruby/rails-guides",
+      "igmarin/rails-agent-skills/rails-stack-conventions",
+      "igmarin/rails-agent-skills/rails-code-review",
+      "igmarin/rails-agent-skills/rails-migration-safety",
+      "igmarin/rails-agent-skills/rails-security-review",
+      "ombulabs/claude-code_rails-upgrade-skill/rails-upgrade",
+    ],
+  },
+  {
+    id: "redis-ruby",
+    name: "Redis (Ruby)",
+    detect: {
+      gems: ["redis", "sidekiq", "resque", "redis-rails"],
+    },
+    skills: [
+      "redis/agent-skills/redis-development",
+    ],
+  },
+  {
+    id: "postgres-ruby",
+    name: "PostgreSQL",
+    detect: {
+      gems: ["pg"],
+    },
+    skills: [],
+  },
+  {
     id: "python",
     name: "Python",
     detect: {
       configFiles: ["pyproject.toml", "requirements.txt", "setup.py", "setup.cfg", "Pipfile"],
+    },
+    skills: [],
+  },
+  {
+    id: "sorbet",
+    name: "Sorbet",
+    detect: {
+      gems: ["sorbet", "sorbet-runtime"],
+      configFiles: ["sorbet/config"],
+    },
+    skills: [
+      "DmitryPogrebnoy/ruby-agent-skills/generating-sorbet",
+      "DmitryPogrebnoy/ruby-agent-skills/generating-sorbet-inline",
+    ],
+  },
+  {
+    id: "activeadmin",
+    name: "ActiveAdmin",
+    detect: {
+      gems: ["activeadmin"],
     },
     skills: [],
   },
@@ -674,6 +813,14 @@ export const SKILLS_MAP = [
         files: ["pyproject.toml", "requirements.txt", "setup.py", "setup.cfg", "Pipfile"],
         patterns: ["django", "Django"],
       },
+    },
+    skills: [],
+  },
+  {
+    id: "devise",
+    name: "Devise",
+    detect: {
+      gems: ["devise"],
     },
     skills: [],
   },
@@ -701,6 +848,38 @@ export const SKILLS_MAP = [
     skills: [],
   },
   {
+    id: "sidekiq",
+    name: "Sidekiq",
+    detect: {
+      gems: ["sidekiq"],
+    },
+    skills: [
+      "igmarin/rails-agent-skills/rails-background-jobs",
+    ],
+  },
+  {
+    id: "rspec",
+    name: "RSpec",
+    detect: {
+      gems: ["rspec", "rspec-rails"],
+      configFiles: [".rspec"],
+    },
+    skills: [
+      "igmarin/rails-agent-skills/rspec-best-practices",
+      "igmarin/rails-agent-skills/rspec-service-testing",
+      "lucianghinda/superpowers-ruby/test-driven-development",
+    ],
+  },
+  {
+    id: "rubocop",
+    name: "RuboCop",
+    detect: {
+      gems: ["rubocop", "rubocop-rails"],
+      configFiles: [".rubocop.yml"],
+    },
+    skills: [],
+  },
+  {
     id: "php",
     name: "PHP",
     detect: {
@@ -718,6 +897,155 @@ export const SKILLS_MAP = [
       },
     },
     skills: [],
+  },
+  {
+    id: "python",
+    name: "Python",
+    detect: {
+      configFiles: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+    },
+    skills: ["inferen-sh/skills/python-executor", "wshobson/agents/python-testing-patterns"],
+  },
+  {
+    id: "fastapi",
+    name: "FastAPI",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["fastapi", "FastAPI"],
+      },
+    },
+    skills: [
+      "wshobson/agents/fastapi-templates",
+      "mindrally/skills/fastapi-python",
+      "jezweb/claude-skills/fastapi",
+    ],
+  },
+  {
+    id: "django",
+    name: "Django",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["django", "Django"],
+      },
+    },
+    skills: [
+      "vintasoftware/django-ai-plugins/django-expert",
+      "affaan-m/everything-claude-code/django-patterns",
+      "affaan-m/everything-claude-code/django-security",
+    ],
+  },
+  {
+    id: "flask",
+    name: "Flask",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["flask", "Flask"],
+      },
+    },
+    skills: ["jezweb/claude-skills/flask", "aj-geddes/useful-ai-prompts/flask-api-development"],
+  },
+  {
+    id: "pydantic",
+    name: "Pydantic",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["pydantic", "Pydantic"],
+      },
+    },
+    skills: ["bobmatnyc/claude-mpm-skills/pydantic"],
+  },
+  {
+    id: "sqlalchemy",
+    name: "SQLAlchemy",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["sqlalchemy", "SQLAlchemy"],
+      },
+    },
+    skills: [
+      "bobmatnyc/claude-mpm-skills/sqlalchemy-orm",
+      "wispbit-ai/skills/sqlalchemy-alembic-expert-best-practices-code-review",
+    ],
+  },
+  {
+    id: "pytest",
+    name: "Pytest",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["pytest", "Pytest"],
+      },
+    },
+    skills: ["wshobson/agents/python-testing-patterns"],
+  },
+  {
+    id: "pandas",
+    name: "Pandas",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["pandas", "Pandas"],
+      },
+    },
+    skills: [
+      "jeffallan/claude-skills/pandas-pro",
+      "pluginagentmarketplace/custom-plugin-python/pandas-data-analysis",
+    ],
+  },
+  {
+    id: "numpy",
+    name: "NumPy",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["numpy", "NumPy", "numpy"],
+      },
+    },
+    skills: [
+      "pluginagentmarketplace/custom-plugin-python/machine-learning",
+      "pluginagentmarketplace/custom-plugin-python/pandas-data-analysis",
+    ],
+  },
+  {
+    id: "scikit-learn",
+    name: "Scikit-Learn",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["scikit-learn", "scikit_learn", "sklearn"],
+      },
+    },
+    skills: [
+      "davila7/claude-code-templates/scikit-learn",
+      "davila7/claude-code-templates/senior-data-scientist",
+    ],
+  },
+  {
+    id: "celery",
+    name: "Celery",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["celery", "Celery"],
+      },
+    },
+    skills: ["wshobson/agents/python-background-jobs"],
+  },
+  {
+    id: "requests",
+    name: "Requests",
+    detect: {
+      configFileContent: {
+        files: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"],
+        patterns: ["requests", "Requests"],
+      },
+    },
+    skills: ["affaan-m/everything-claude-code/python-patterns"],
   },
 ];
 
@@ -870,6 +1198,21 @@ export const COMBO_SKILLS_MAP = [
     name: "Android + Clerk",
     requires: ["android", "clerk"],
     skills: ["clerk/skills/clerk-android", "clerk/skills/clerk-setup", "clerk/skills/clerk"],
+  },
+  {
+    id: "rails-rspec",
+    name: "Ruby on Rails + RSpec",
+    requires: ["rails", "rspec"],
+    skills: [
+      "igmarin/rails-agent-skills/rails-tdd-slices",
+      "igmarin/rails-agent-skills/rails-bug-triage",
+    ],
+  },
+  {
+    id: "rails-sidekiq",
+    name: "Ruby on Rails + Sidekiq",
+    requires: ["rails", "sidekiq"],
+    skills: [],
   },
 ];
 
