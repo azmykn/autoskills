@@ -1173,6 +1173,23 @@ export const SKILLS_MAP: Technology[] = [
     },
     skills: ["affaan-m/everything-claude-code/python-patterns"],
   },
+  {
+    id: "odoo",
+    name: "Odoo",
+    detect: {
+      configFiles: ["__manifest__.py"],
+      configFileContent: {
+        files: ["requirements.txt", "pyproject.toml"],
+        patterns: ["odoo", "Odoo"],
+      },
+    },
+    skills: [
+      "odoo/skills/odoo-18.0",
+      "odoo/skills/odoo-orm-expert",
+      "odoo/skills/odoo-security-rules",
+      "odoo/skills/odoo-module-developer"
+    ],
+  },
 ];
 
 // ── Combo Skills Map (cross-technology) ──────────────────────
@@ -1345,6 +1362,12 @@ export const COMBO_SKILLS_MAP: ComboSkill[] = [
     name: "Ruby on Rails + Sidekiq",
     requires: ["rails", "sidekiq"],
     skills: [],
+  },
+  {
+    id: "odoo-python",
+    name: "Odoo + Python",
+    requires: ["odoo", "python"],
+    skills: ["odoo/skills/odoo-orm-expert", "odoo/skills/odoo-performance-tuner"],
   },
 ];
 
