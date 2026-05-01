@@ -1,47 +1,27 @@
-<div align="center">
+<div dir="rtl">
 
-<a href="https://autoskills.sh">
-<img src="https://autoskills.sh/og.jpg" alt="autoskills" />
-</a>
+# 🛑 إشعار قانوني وسياسة الملكية الفكرية (Legal Notice & Intellectual Property Policy)
 
-# autoskills
+**© 2025 جميع الحقوق محفوظة لشركة DigitsCode (Digital Integrated Transformation Solutions).**
 
-**One command. Your entire AI skill stack. Installed.**
+يُعد هذا المستودع البرمجي (Repository) وما يحتويه من شفرات مصدرية (Source Code)، وتصاميم، وهياكل قواعد بيانات، وموديولات (Modules)، **ملكية فكرية حصرية** لشركة **DigitsCode**. تمت حماية هذه الأصول بموجب قوانين حماية الملكية الفكرية وحقوق النشر والتأليف المحلية والدولية.
 
-[autoskills.sh](https://autoskills.sh)
+⚠️ **شروط وأحكام الاستخدام (محظورات قطعية ما لم يرد إذن كتابي صريح):**
+1. **النسخ والاجتزاء:** يُحظر نسخ، أو استنساخ، أو اقتباس، أو إعادة استخدام أي جزء من هذا الكود المصدري في أي مشاريع أو أنظمة أخرى.
+2. **التوزيع والمشاركة:** يُمنع منعاً باتاً بيع، أو تأجير، أو ترخيص، أو مشاركة هذه الأكواد مع أي طرف ثالث (أفراد، شركات، أو مؤسسات).
+3. **التعديل والهندسة العكسية:** يُحظر إجراء أي هندسة عكسية (Reverse Engineering)، أو تعديل على الشفرة المصدرية بغرض بناء منتج تجاري مستقل، أو مشتق، أو منافس.
+
+**الجهة الوحيدة** المُخولة بمنح تراخيص الاستخدام، أو التوزيع، أو التعديل خارج النطاق التعاقدي المُتفق عليه هي **شركة DigitsCode** وحدها. 
+
+إن أي انتهاك أو خرق لهذه الشروط سيُعرض المخالف للمساءلة القانونية الفورية، وستقوم الشركة باتخاذ كافة الإجراءات القضائية الرادعة لضمان حقوقها المادية والمعنوية، بما في ذلك المطالبة بالتعويضات عن الأضرار الناجمة.
+
+---
+
+### للتواصل، الاستفسارات القانونية، والدعم الفني (Contact & Support):
+*   **المُطور والمالك الحصري:** Digital Integrated Transformation Solutions (DigitsCode)
+*   **الموقع الإلكتروني:** [www.digitscode.com](https://www.digitscode.com)
+*   **البريد الإلكتروني:** [info@digitscode.com](mailto:info@digitscode.com)
 
 </div>
 
-Scans your project, detects your tech stack, and installs the best AI agent skills from [skills.sh](https://skills.sh) automatically.
-
-```bash
-npx autoskills
-```
-
-## How it works
-
-1. Run `npx autoskills` in your project root
-2. Your `package.json`, Gradle files, and config files are scanned to detect technologies
-3. The best matching AI agent skills are installed via [skills.sh](https://skills.sh)
-
-That's it. No config needed.
-
-## Options
-
-```
--y, --yes       Skip confirmation prompt
---dry-run       Show what would be installed without installing
--h, --help      Show help message
-```
-
-## Supported technologies
-
-React · Next.js · Vue · Nuxt · Pinia · Svelte · Angular · Astro · Tailwind CSS · shadcn/ui · TypeScript · Supabase · Neon · Playwright · Expo · React Native · Kotlin Multiplatform · Android · Remotion · Better Auth · Clerk · Turborepo · Vite · Azure · Vercel · Vercel AI SDK · ElevenLabs · Cloudflare · Durable Objects · Cloudflare Agents · Cloudflare AI · AWS · SwiftUI · oxlint · GSAP · Three.js · Node.js · Express · Bun · Deno · Prisma · Stripe · Hono · Vitest · Drizzle ORM · NestJS · Tauri · Spring Boot
-
-## Requirements
-
-Node.js >= 22
-
-## License
-
-[CC BY-NC 4.0](./LICENSE) — [midudev](https://midu.dev)
+---
